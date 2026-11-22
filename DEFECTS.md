@@ -1,5 +1,5 @@
 Defects Found and Fixed
-
+test
 1. SQL injection in repository.py (get_product and get_saved_cart)
 Where: StoreRepository.get_product and StoreRepository.get_saved_cart built SQL strings using f-strings.
 Risk: Arbitrary SQL injection and query errors on quotes.
