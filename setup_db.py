@@ -1,11 +1,29 @@
-"""Initialize demo data in a chosen local SQLite file."""
 import sqlite3
 import sys
 
 SCHEMA = '''
-CREATE TABLE IF NOT EXISTS products (sku TEXT PRIMARY KEY, name TEXT NOT NULL, price REAL NOT NULL, stock INTEGER NOT NULL);
-CREATE TABLE IF NOT EXISTS saved_cart (user_id TEXT NOT NULL, sku TEXT NOT NULL, quantity INTEGER NOT NULL);
-CREATE TABLE IF NOT EXISTS orders (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, amount REAL, status TEXT, request_id TEXT);
+CREATE TABLE IF NOT EXISTS products (
+    sku TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    price REAL NOT NULL CHECK (price >= 0),
+    stock INTEGER NOT NULL CHECK (stock >= 0)
+);
+CREATE TABLE IF NOT EXISTS saved_cart (
+    user_id TEXT NOT NULL,
+    sku TEXT NOT NULL,
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    PRIMARY KEY (user_id, sku)
+);
+CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT NOT NULL,
+    amount REAL NOT NULL CHECK (amount >= 0),
+    status TEXT NOT NULL,
+    request_id TEXT
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_paid_request
+    ON orders(user_id, request_id)
+    WHERE status = 'paid' AND request_id IS NOT NULL AND request_id != '';
 '''
 
 
